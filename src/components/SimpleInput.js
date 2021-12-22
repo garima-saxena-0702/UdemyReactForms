@@ -1,56 +1,54 @@
-import {useState} from 'react';
+import { useState } from "react";
+
+import useInput from "../hooks/use-input";
 
 const SimpleInput = (props) => {
-  const [enteredName, setEnteredName] = useState('');
-  const [enteredEmail, setEnteredEmail] = useState('');
-  const [touchedEnteredName, setTouchedEnteredName] = useState(false);
+  const {
+    value: enteredName,
+    isValid: validEnteredName,
+    hasError: nameInputHasError,
+    valueInputChangeHandler: nameChangeHandler,
+    valueInputBlurHandler: nameBlurHandler,
+    reset: resetNameInput,
+  } = useInput((value) => value.trim() !== "");
+
+  const [enteredEmail, setEnteredEmail] = useState("");
   const [touchedEnteredEmail, setTouchedEnteredEmail] = useState(false);
 
-  const validEnteredName = enteredName.trim() !== '';
-  const nameInputInvalid = !validEnteredName && touchedEnteredName;
-  const nonemptyEnteredEmail = enteredEmail.trim() !== '';
-  const validEnteredEmail = enteredEmail.includes('@');
-  const emailInputInvalid = !validEnteredEmail && !nonemptyEnteredEmail && touchedEnteredEmail;
+  const nonemptyEnteredEmail = enteredEmail.trim() !== "";
+  const validEnteredEmail = enteredEmail.includes("@");
+  const emailInputInvalid =
+    !validEnteredEmail && !nonemptyEnteredEmail && touchedEnteredEmail;
   let validForm = false;
 
-  if(validEnteredName && validEnteredEmail && nonemptyEnteredEmail) {
+  if (validEnteredName && validEnteredEmail && nonemptyEnteredEmail) {
     validForm = true;
   } else {
     validForm = false;
   }
 
-  const nameInputChangeHandler = event => {
-    setEnteredName(event.target.value);
-  }
-
-  const emailInputChangeHandler = event => {
+  const emailInputChangeHandler = (event) => {
     setEnteredEmail(event.target.value);
-  }
+  };
 
-  const nameInputBlurHandler = event => {
-    setTouchedEnteredName(true);
-  }
-
-  const emailInputBlurHandler = event => {
+  const emailInputBlurHandler = (event) => {
     setTouchedEnteredEmail(true);
-  }
+  };
 
-  const formSubmitionHandler = event => {
+  const formSubmitionHandler = (event) => {
     event.preventDefault();
-    setTouchedEnteredName(true);
     setTouchedEnteredEmail(true);
-    if(!validEnteredName || !validEnteredEmail ||!nonemptyEnteredEmail) {
+    if (!validEnteredName || !validEnteredEmail || !nonemptyEnteredEmail) {
       return;
     }
     console.log(enteredName);
     console.log(enteredEmail);
-    setEnteredName('');
-    setTouchedEnteredName(false);
-    setEnteredEmail('');
+    resetNameInput();
+    setEnteredEmail("");
     setTouchedEnteredEmail(false);
-  }
+  };
 
-  const nameInputClasses = !nameInputInvalid
+  const nameInputClasses = !nameInputHasError
     ? "form-control"
     : "form-control invalid";
 
@@ -65,11 +63,11 @@ const SimpleInput = (props) => {
         <input
           type="text"
           id="name"
-          onChange={nameInputChangeHandler}
-          onBlur={nameInputBlurHandler}
+          onChange={nameChangeHandler}
+          onBlur={nameBlurHandler}
           value={enteredName}
         />
-        {nameInputInvalid && (
+        {nameInputHasError && (
           <p className="error-text">Name must not be empty</p>
         )}
       </div>
